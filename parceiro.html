@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#b5482f">
+<meta name="color-scheme" content="light">
+<title>Feira Nuzzi — Portal do Parceiro</title>
+<link rel="stylesheet" href="parceiro.css">
+<link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.86 21.86 0 0 1 5.06-6.94"/><path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.86 21.86 0 0 1-3.22 4.44"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></symbol>
+  <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8z"/><line x1="13" y1="6" x2="13" y2="18" stroke-dasharray="2 2.4"/></symbol>
+  <symbol id="i-basket" viewBox="0 0 24 24"><path d="M21 8H3l1.5 12.5A2 2 0 0 0 6.48 22h11.04a2 2 0 0 0 1.98-1.5L21 8z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></symbol>
+</svg>
+
+<div class="login-wrap" id="loginScreen">
+  <div class="lp-body">
+    <div class="auth-panel">
+      <button type="button" class="back-to-catalog" onclick="location.href='/'">← Voltar ao catálogo</button>
+      <div class="top-tag">ACESSO ÚNICO</div>
+      <h2>Entrar no painel</h2>
+      <p class="sub">Use as mesmas credenciais de vendedor cadastradas na feira.</p>
+      <form id="loginForm">
+        <div class="field">
+          <label for="loginEmail">E-mail</label>
+          <input type="email" id="loginEmail" placeholder="voce@barraca.com" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="loginPass">Senha</label>
+          <div class="input-wrap">
+            <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" required>
+            <button type="button" class="toggle-eye" data-target="loginPass" aria-label="Mostrar senha">
+              <svg class="icon"><use href="#i-eye"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="field-error" id="loginError">E-mail ou senha incorretos.</div>
+        <button type="submit" class="auth-submit">Entrar</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <header class="top">
+    <div class="header-actions">
+      <div class="user-chip" id="userChip"></div>
+    </div>
+  </header>
+
+  <nav class="app-nav" id="navList">
+    <button data-view="pedidos" class="active"><svg class="icon"><use href="#i-ticket"/></svg> Pedidos<span class="off-tag" id="pendingBadge" style="display:none"></span></button>
+    <button data-view="produtos"><svg class="icon"><use href="#i-basket"/></svg> Produtos<span class="off-tag" id="productsBadge" style="display:none"></span></button>
+    <button data-view="perfil"><svg class="icon"><use href="#i-pin"/></svg> Minha barraca</button>
+  </nav>
+
+  <main class="workspace">
+    <div class="topline">
+      <div>
+        <h1 id="viewTitle">Pedidos de hoje</h1>
+        <div class="sub" id="viewSub">Marque as retiradas e acompanhe o movimento da banca.</div>
+      </div>
+      <div class="today-badge" id="todayBadge"></div>
+    </div>
+    <div class="crates" id="crates"></div>
+
+    <section class="view active" id="view-pedidos">
+      <div class="section-title">Fila de retirada</div>
+      <div class="toolbar">
+        <button type="button" class="chip active" data-filter="pendente">Pendentes</button>
+        <button type="button" class="chip" data-filter="retirado">Retirados</button>
+        <button type="button" class="chip" data-filter="todos">Todos</button>
+        <div class="search-mini">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <input type="search" id="orderSearch" placeholder="Buscar pedido ou cliente">
+        </div>
+      </div>
+      <div class="orders" id="ordersList"></div>
+    </section>
+
+    <section class="view" id="view-produtos">
+      <div class="section-title">Cardápio da barraca</div>
+      <div class="toolbar">
+        <button type="button" class="chip active" data-pfilter="todos">Todos</button>
+        <button type="button" class="chip" data-pfilter="ativo">Ativos</button>
+        <button type="button" class="chip" data-pfilter="pausado">Pausados</button>
+        <div class="search-mini">
+          <svg class="icon"><use href="#i-search"/></svg>
+          <input type="search" id="productSearch" placeholder="Buscar produto">
+        </div>
+      </div>
+      <div class="products-list" id="productsList"></div>
+      <div class="add-tag">
+        <form id="addProductForm">
+          <div class="add-grid">
+            <div class="full">
+              <label for="pName">Nome do produto</label>
+              <input type="text" id="pName" placeholder="Ex: Geleia de amora" required>
+            </div>
+            <div>
+              <label for="pPrice">Preço</label>
+              <input type="text" id="pPrice" placeholder="Ex: R$ 18,00" required>
+              <div class="field-error" id="pPriceError">Use um formato como R$ 18,00 ou R$ 6,90/kg.</div>
+            </div>
+            <div>
+              <label for="pImg">Foto do produto (opcional)</label>
+              <div class="photo-upload">
+                <img id="pImgPreview" class="photo-preview" style="display:none" alt="Pré-visualização">
+                <input type="file" id="pImg" accept="image/*">
+              </div>
+            </div>
+            <div>
+              <label for="pStock">Estoque (opcional)</label>
+              <input type="number" id="pStock" min="0" step="1" placeholder="Deixe vazio p/ não controlar">
+            </div>
+            <div class="full">
+              <label for="pDesc">Descrição curta</label>
+              <textarea id="pDesc" placeholder="Uma frase sobre o produto"></textarea>
+            </div>
+            <div class="full cfg-toggle">
+              <label class="cfg-check"><input type="checkbox" id="pConfig"> Produto configurável (ex.: milk-shake com sabores, tamanhos e adicionais)</label>
+              <div class="cfg-hint">O preço acima passa a ser o preço base. Cada tamanho soma um acréscimo e cada adicional soma o seu valor.</div>
+            </div>
+            <div class="full cfg-box" id="pConfigBox" hidden></div>
+          </div>
+          <button type="submit" class="add-submit">Adicionar produto</button>
+          <span class="save-toast" id="productToast"><svg class="icon"><use href="#i-check"/></svg> Produto adicionado</span>
+        </form>
+      </div>
+    </section>
+
+    <section class="view" id="view-perfil">
+      <div class="section-title">Dados da barraca</div>
+      <form class="profile-form" id="profileForm">
+        <div class="profile-grid">
+          <div class="full">
+            <label for="prName">Nome da barraca</label>
+            <input type="text" id="prName">
+          </div>
+          <div>
+            <label for="prCategory">Categoria</label>
+            <select id="prCategory">
+              <option>Frutas &amp; Verduras</option>
+              <option>Comidas &amp; Lanches</option>
+              <option>Artesanato</option>
+              <option>Flores &amp; Plantas</option>
+              <option>Laticínios</option>
+              <option>Padaria</option>
+              <option>Outros</option>
+            </select>
+          </div>
+          <div>
+            <label for="prHours">Horário de funcionamento</label>
+            <input type="text" id="prHours" placeholder="Sáb e Dom, 7h às 13h">
+          </div>
+          <div class="full">
+            <label for="prAbout">Sobre a barraca</label>
+            <textarea id="prAbout"></textarea>
+          </div>
+          <div class="full">
+            <label class="remember" style="text-transform:none; letter-spacing:0; font-size:14px; font-weight:600; color:var(--muted)">
+              <input type="checkbox" id="prOpen"> Loja aberta — visível no catálogo
+            </label>
+          </div>
+        </div>
+        <div style="margin-top:16px">
+          <button type="submit" class="profile-save">Salvar alterações</button>
+          <span class="save-toast" id="saveToast"><svg class="icon"><use href="#i-check"/></svg> Salvo</span>
+        </div>
+      </form>
+    </section>
+  </main>
+</div>
+
+<div class="overlay" id="editOverlay">
+  <div class="modal" role="dialog">
+    <button class="close" id="editClose">✕</button>
+    <h2>Editar produto</h2>
+    <p class="sub">Atualize o item que aparece no cardápio da barraca.</p>
+    <form id="editProductForm">
+      <input type="hidden" id="editId">
+      <input type="hidden" id="eImgCurrent">
+      <div class="field"><label for="eName">Nome</label><input type="text" id="eName" required></div>
+      <div class="field">
+        <label for="ePrice">Preço</label>
+        <input type="text" id="ePrice" required>
+        <div class="field-error" id="ePriceError">Use um formato como R$ 18,00 ou R$ 6,90/kg.</div>
+      </div>
+      <div class="field">
+        <label for="eImg">Foto do produto</label>
+        <div class="photo-upload">
+          <img id="eImgPreview" class="photo-preview" style="display:none" alt="Pré-visualização">
+          <input type="file" id="eImg" accept="image/*">
+        </div>
+      </div>
+      <div class="field">
+        <label for="eStock">Estoque (deixe vazio p/ não controlar)</label>
+        <input type="number" id="eStock" min="0" step="1" placeholder="Ex: 20">
+      </div>
+      <div class="field"><label for="eDesc">Descrição</label><textarea id="eDesc"></textarea></div>
+      <div class="field cfg-toggle">
+        <label class="cfg-check"><input type="checkbox" id="eConfig"> Produto configurável (sabores, tamanhos e adicionais)</label>
+        <div class="cfg-hint">O preço acima é o preço base; tamanhos e adicionais somam a ele.</div>
+      </div>
+      <div class="cfg-box" id="eConfigBox" hidden></div>
+      <label class="remember"><input type="checkbox" id="eActive"> Produto visível no cardápio</label>
+      <div class="modal-actions">
+        <button type="button" class="btn-ghost" id="editCancel">Cancelar</button>
+        <button type="submit" class="btn-ink">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="parceiro.js"></script>
+</body>
+</html>

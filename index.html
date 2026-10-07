@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#b5482f">
+    <meta name="color-scheme" content="light">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Feira Nuzzi">
+    <title>Feira Nuzzi</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+</head>
+
+<body>
+
+    <svg style="display:none" aria-hidden="true">
+        <symbol id="i-eye" viewBox="0 0 24 24">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+            <circle cx="12" cy="12" r="3" />
+        </symbol>
+        <symbol id="i-eye-off" viewBox="0 0 24 24">
+            <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.86 21.86 0 0 1 5.06-6.94" />
+            <path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.86 21.86 0 0 1-3.22 4.44" />
+            <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24" />
+            <line x1="1" y1="1" x2="23" y2="23" />
+        </symbol>
+        <symbol id="i-search" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </symbol>
+    </svg>
+
+    <div class="login-wrap" id="loginScreen">
+        <header class="top">
+        </header>
+        <div class="lp-body">
+            <div class="auth-panel">
+                <button type="button" class="back-to-catalog" id="backToCatalogBtn">← Voltar ao catálogo</button>
+                <div class="top-tag">ACESSO ÚNICO</div>
+                <h2 id="lpTitle">Entrar</h2>
+                <p class="sub" id="lpSub">Acesse com o mesmo login, cliente ou vendedor — a gente leva você pro lugar
+                    certo.</p>
+                <div class="login-note" id="loginNote">Faça login (ou crie sua conta) pra continuar.</div>
+
+                <div class="auth-tabs">
+                    <button type="button" id="tabLoginBtn" class="active">Entrar</button>
+                    <button type="button" id="tabRegisterBtn">Criar conta</button>
+                </div>
+
+                <form id="loginForm">
+                    <div class="field">
+                        <label for="loginEmail">E-mail</label>
+                        <input type="email" id="loginEmail" placeholder="voce@email.com" autocomplete="username"
+                            required>
+                    </div>
+                    <div class="field">
+                        <label for="loginPass">Senha</label>
+                        <div class="input-wrap">
+                            <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password"
+                                required>
+                            <button type="button" class="toggle-eye" data-target="loginPass" aria-label="Mostrar senha">
+                                <svg class="icon"><use href="#i-eye" /></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="field-error" id="loginError">E-mail ou senha incorretos.</div>
+                    <div class="forgot-msg" id="forgotMsg">Se este e-mail existir, enviaremos as instruções
+                        (demonstração).</div>
+                    <div class="row-between">
+                        <label class="remember"><input type="checkbox" id="rememberMe" checked> Manter conectado</label>
+                        <button type="button" class="forgot-link" id="forgotBtn">Esqueci minha senha</button>
+                    </div>
+                    <button type="submit" class="auth-submit">Entrar</button>
+                </form>
+
+                <form id="registerForm" style="display:none">
+                    <div class="field" id="regNameField">
+                        <label for="regName">Seu nome completo</label>
+                        <input type="text" id="regName" placeholder="Nome e sobrenome" autocomplete="name" required>
+                        <div class="name-notice">⚠️ Digite seu <b>nome completo</b> (nome e sobrenome). É com ele que as barracas identificam o seu pedido.</div>
+                    </div>
+                    <div class="field">
+                        <label for="regEmail">E-mail</label>
+                        <input type="email" id="regEmail" placeholder="voce@email.com" autocomplete="username" required>
+                    </div>
+                    <div class="field">
+                        <label for="regPass">Crie uma senha</label>
+                        <div class="input-wrap">
+                            <input type="password" id="regPass" placeholder="Mínimo 6 caracteres" minlength="6"
+                                autocomplete="new-password" required>
+                            <button type="button" class="toggle-eye" data-target="regPass" aria-label="Mostrar senha">
+                                <svg class="icon"><use href="#i-eye" /></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="field-error" id="registerError"></div>
+                    <button type="submit" class="auth-submit">Criar conta e entrar</button>
+                </form>
+<!-- 
+                <div class="lp-note">
+                    <b>Contas de demonstração:</b><br>
+                    Cliente: cliente@feiranuzzi.com · senha compras123<br>
+                    Vendedor: nino@feiranuzzi.com · senha colheita2024<br>
+                    Admin: admin@feiranuzzi.com · senha admin123
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <div id="app-cliente">
+        <header class="top">
+            <div class="header-actions">
+                <button type="button" class="feira-login-link" id="openLoginBtn">Entrar</button>
+                <div class="account-cluster" id="accountCluster" hidden>
+                    <button type="button" class="feira-orders-btn" id="openOrdersBtn">📋 Meus pedidos<span class="bang" id="ordersBang" hidden>!</span></button>
+                    <button type="button" class="feira-logout-btn" id="logoutBtn">Sair</button>
+                </div>
+                <div class="cart-corner">
+                    <button class="cart-btn" id="cartBtn">
+                        🛒 Carrinho
+                        <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="cart-overlay" id="cartOverlay">
+            <div class="cart-panel">
+                <button class="close" id="cartClose">✕</button>
+                <h2>Seu carrinho</h2>
+                <div id="cartContent"></div>
+            </div>
+        </div>
+
+        <div class="orders-overlay" id="ordersOverlay">
+            <div class="orders-panel">
+                <button class="close" id="ordersClose">✕</button>
+                <h2>Meus pedidos</h2>
+                <p class="sub">Acompanhe o status de cada pedido. Quando ficar pronto, avisamos aqui.</p>
+                <div id="ordersContent"></div>
+            </div>
+        </div>
+
+        <div class="ticket-overlay" id="ticketOverlay">
+            <div class="ticket-panel" id="ticketPanel"></div>
+        </div>
+
+        <div class="confirm-overlay" id="confirmOverlay">
+            <div class="confirm-panel" id="confirmPanel"></div>
+        </div>
+
+        <div class="confirm-overlay config-overlay" id="configOverlay">
+            <div class="confirm-panel" id="configPanel"></div>
+        </div>
+
+        <div class="search-wrap">
+            <div class="search-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Buscar barraca, produto ou categoria...">
+            </div>
+        </div>
+
+        <div class="filters" id="filters"></div>
+
+        <main>
+            <div class="grid" id="grid"></div>
+        </main>
+
+        <div class="overlay" id="overlay">
+            <div class="panel" id="panel"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Painel administrativo da Feira Nuzzi.">
+<title>Feira Nuzzi — Painel Admin</title>
+<link rel="stylesheet" href="admin.css">
+<link rel="shortcut icon" href="img/logo.png" type="image/x-icon">
+</head>
+<body>
+  <header class="top">
+    <div class="header-actions">
+      <button class="icon-btn" title="Notificações" onclick="toast('Nenhuma notificação nova')">🔔</button>
+      <div class="user-chip">
+        <div class="avatar">A</div>
+        <div class="meta">Admin<span>acesso total</span></div>
+      </div>
+      <button class="icon-btn" title="Sair" onclick="doLogout()">⏻</button>
+    </div>
+    <div class="eyebrow" id="kicker">Painel interno</div>
+  </header>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input id="globalSearch" type="text" placeholder="Buscar reserva, loja ou usuário...">
+    </div>
+  </div>
+
+  <nav class="filters" id="nav">
+    <button class="active" data-view="dashboard">🏠 Dashboard</button>
+    <button data-view="reservas">🧾 Reservas</button>
+    <button data-view="pix">💸 PIX <span id="pixCount"></span></button>
+    <button data-view="lojas">⛺ Lojas</button>
+    <button data-view="produtos">📦 Produtos</button>
+    <button data-view="usuarios">👥 Usuários</button>
+    <button data-view="relatorios">📊 Relatórios</button>
+    <button data-view="config">⚙️ Configurações</button>
+  </nav>
+
+  <div class="page-intro">
+    <div>
+      <div class="kicker" id="pageKicker">Visão geral</div>
+      <h2 id="pageTitle">Dashboard</h2>
+      <div class="sub" id="pageSub">Acompanhe o movimento do dia da feira</div>
+    </div>
+  </div>
+
+  <main class="content">
+    <section id="view-dashboard">
+      <div class="stats">
+        <div class="stat"><div class="num" id="statReservasHoje">—</div><div class="label">Reservas hoje</div></div>
+        <div class="stat"><div class="num" id="statPendentes">—</div><div class="label">Pendentes</div></div>
+        <div class="stat"><div class="num" id="statLojas">—</div><div class="label">Lojas ativas</div></div>
+        <div class="stat"><div class="num" id="statEstoque">—</div><div class="label">Estoque baixo</div></div>
+      </div>
+      <div class="split">
+        <div class="panel">
+          <div class="panel-head">
+            <div><h3>Últimas reservas</h3><div class="sub">Pedidos mais recentes da feira</div></div>
+            <button class="soft" data-goto="reservas">Ver todas</button>
+          </div>
+          <table>
+            <thead><tr><th>Código</th><th>Cliente</th><th>Loja</th><th>Status</th></tr></thead>
+            <tbody id="dashReservas"></tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><h3>Lojas em movimento</h3><div class="sub">Reservas acumuladas</div></div></div>
+          <div id="dashRank"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-reservas" hidden>
+      <div class="panel">
+        <div class="panel-head">
+          <div><h3>Todas as reservas</h3><div class="sub">Aprove, cancele ou marque a retirada</div></div>
+          <div class="chip-filters" id="resFilters">
+            <button class="active" data-filter="todas">Todas</button>
+            <button data-filter="pendente">Pendentes</button>
+            <button data-filter="preparo">Em preparo</button>
+            <button data-filter="pronto">Prontas</button>
+            <button data-filter="concluido">Concluídas</button>
+            <button data-filter="cancelado">Canceladas</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>Código</th><th>Cliente</th><th>Loja / Itens</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="resBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="view-pix" hidden>
+      <div class="panel">
+        <div class="panel-head">
+          <div><h3>Pagamentos informados pelos clientes</h3><div class="sub">O cliente avisou que pagou. Confira no app do banco se o valor caiu (valor + nome do pagador) e então confirme.</div></div>
+          <button class="soft" onclick="refreshPix(true)">Atualizar</button>
+        </div>
+        <table>
+          <thead><tr><th>Informado em</th><th>Cliente</th><th>Barracas / Itens</th><th>Valor</th><th>Ações</th></tr></thead>
+          <tbody id="pixBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="view-lojas" hidden>
+      <div class="panel-head" style="margin-bottom:16px">
+        <div><h3>Lojas da feira</h3><div class="sub">Aprove barracas e acompanhe cada grupo</div></div>
+        <button class="primary" id="btnNovaLoja">+ Nova loja</button>
+      </div>
+      <div class="cards" id="lojaCards"></div>
+    </section>
+
+    <section id="view-produtos" hidden>
+      <div class="panel">
+        <div class="panel-head"><div><h3>Produtos cadastrados</h3><div class="sub">Visão geral de estoque da feira</div></div></div>
+        <table>
+          <thead><tr><th>Produto</th><th>Loja</th><th>Preço</th><th>Estoque</th><th>Status</th></tr></thead>
+          <tbody id="prodBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="view-usuarios" hidden>
+      <div class="panel">
+        <div class="panel-head">
+          <div><h3>Usuários e acessos</h3><div class="sub">Clientes, responsáveis de loja e administradores</div></div>
+        </div>
+        <table>
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Tipo</th><th>Criado em</th></tr></thead>
+          <tbody id="userBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="view-relatorios" hidden>
+      <div class="stats">
+        <div class="stat"><div class="num" id="relTotal">—</div><div class="label">Reservas no total</div></div>
+        <div class="stat"><div class="num" id="relAtivas">—</div><div class="label">Lojas ativas</div></div>
+        <div class="stat"><div class="num" id="relPend">—</div><div class="label">Pendentes</div></div>
+        <div class="stat"><div class="num" id="relEstoque">—</div><div class="label">Estoque baixo</div></div>
+      </div>
+      <div class="split">
+        <div class="panel">
+          <div class="panel-head"><h3>Produtos mais reservados</h3></div>
+          <div id="topProd"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><h3>Lista do dia</h3><div class="sub">Para imprimir na retirada</div></div></div>
+          <p class="sub" style="padding:8px 2px 16px; line-height:1.5">
+            No dia da feira, o admin gera uma lista por loja com nome do cliente, produto e código da reserva.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-config" hidden>
+      <div class="panel">
+        <div class="panel-head"><div><h3>Configurações da feira</h3><div class="sub">Dados gerais usados em todo o sistema</div></div></div>
+        <div class="form-grid">
+          <div><label>Nome da feira</label><input type="text" value="Feira Nuzzi — Empreendedora"></div>
+          <div><label>Valor da taxa de reserva</label><input type="text" value="R$ 5,00"></div>
+          <div><label>Data da feira</label><input type="date" value="2026-09-12"></div>
+          <div><label>Horário</label><input type="text" value="8h às 17h"></div>
+        </div>
+        <div class="form-actions">
+          <button class="soft">Cancelar</button>
+          <button class="primary" onclick="toast('Configurações salvas')">Salvar alterações</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <div class="modal-overlay" id="novaLojaOverlay">
+    <div class="modal-panel">
+      <div class="panel-head" style="margin-bottom:6px">
+        <div><h3>Cadastrar nova loja</h3><div class="sub">Crie o acesso do responsável — ele completa os dados da loja no painel de parceiro</div></div>
+        <button class="icon-btn" id="btnFecharNovaLoja" title="Fechar">✕</button>
+      </div>
+      <form id="formNovaLoja">
+        <div class="form-grid" style="grid-template-columns:1fr">
+          <div>
+            <label for="lojaNome">Nome da loja / responsável</label>
+            <input type="text" id="lojaNome" placeholder="Ex.: Doces da Maria" required>
+          </div>
+          <div>
+            <label for="lojaEmail">E-mail de acesso (Gmail)</label>
+            <input type="email" id="lojaEmail" placeholder="loja@gmail.com" required>
+          </div>
+          <div>
+            <label for="lojaSenha">Chave de acesso</label>
+            <div style="display:flex; gap:8px">
+              <input type="text" id="lojaSenha" placeholder="mín. 6 caracteres" required style="flex:1">
+              <button type="button" class="soft" id="btnGerarChave">Gerar</button>
+            </div>
+          </div>
+        </div>
+        <p class="form-error" id="novaLojaError"></p>
+        <div class="form-actions">
+          <button type="button" class="soft" id="btnCancelarNovaLoja">Cancelar</button>
+          <button type="submit" class="primary">Cadastrar loja</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+<script src="admin.js"></script>
+</body>
+</html>
